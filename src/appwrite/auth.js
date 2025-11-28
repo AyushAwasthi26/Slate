@@ -5,6 +5,8 @@ export class AuthService {
     client = new Client();  // Appwrite client instance, we get it from Appwrite SDK
     account; // Appwrite account instance, we get it from Appwrite SDK too defined later in constructor
 
+
+// ACCOUNT TABHI BANEGA JAB PEHLI BAAR CONSTRUCTOR CALL HOGA!
 constructor() {  // here we get our ENVIRONMENT VARIABLES from conf.js and set them to the Appwrite client instance
         this.client
             .setEndpoint(conf.appwriteUrl)        // Your Appwrite Endpoint
@@ -30,8 +32,12 @@ constructor() {  // here we get our ENVIRONMENT VARIABLES from conf.js and set t
         }
     }
 
+
+
+    // LOGIN == creating a session whereas SIGNUP == creating a new account
+    // LOGOUT == deleting the session
     async login({email, password}) {  // function to login the user using VALUES FROM THE USER INPUT, maybe a form
-        try {
+        try { 
             return await this.account.createEmailSession(email, password);
         }
 
