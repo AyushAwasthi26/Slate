@@ -1,6 +1,7 @@
 import conf from '../conf/conf.js';
 import { Client, Account, ID } from 'appwrite';
 
+
 export class AuthService {
     client = new Client();  // Appwrite client instance, we get it from Appwrite SDK
     account; // Appwrite account instance, we get it from Appwrite SDK too defined later in constructor
@@ -15,7 +16,7 @@ constructor() {  // here we get our ENVIRONMENT VARIABLES from conf.js and set t
         this.account = new Account(this.client); // here we initialize the account instance using the client instance [ used for authentication ]
     }
 
-    async createAccount(email, password, name) { // function to create a new user account using VALUES FROM THE USER INPUT, maybe a form, if the account already exists, it will login the user instead 
+    async createAccount({email, password, name}) {  // function to create a new account using VALUES FROM THE USER INPUT, maybe a form, if the account already exists, it will login the user instead 
 
         try{
             const userAccount = await this.account.create(ID.unique(), email, password, name); // creating a new account using Appwrite SDK function [ .create() ] that we can now use with the account instance
@@ -38,7 +39,7 @@ constructor() {  // here we get our ENVIRONMENT VARIABLES from conf.js and set t
     // LOGOUT == deleting the session
     async login({email, password}) {  // function to login the user using VALUES FROM THE USER INPUT, maybe a form
         try { 
-            return await this.account.createEmailSession(email, password);
+            return await this.account.createEmailPasswordSession(email, password);
         }
 
         catch (error) { // to handle errors like invalid credentials
@@ -46,14 +47,16 @@ constructor() {  // here we get our ENVIRONMENT VARIABLES from conf.js and set t
         }
     }
 
-    async getCurrentUser() {  // function to get the currently logged-in user details
+    async getCurrentUser() {
         try {
-            return await this.account.get(); // we had already created the account instance in the constructor using the client instance, now we just use the get() function from Appwrite SDK to get the current user details
+            return await this.account.get();
         } catch (error) {
-            console.log('Appwrite Service - Get Current User Error: ', error);
+            // Don't log 401 errors - they're expected when no user is logged in
+            if (error.code !== 401) {
+                console.log('Appwrite Service - Get Current User Error: ', error);
+            }
+            return null; // Return null for "not logged in" state
         }
-
-        return null;
     }
 
     async logout() {  // function to logout the current user

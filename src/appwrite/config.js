@@ -17,24 +17,24 @@ export class Service {
   }
 
   async createPost({ title, slug, content, featuredImage, status, userId }) {
-    // function to create a new post
-
     try {
       return await this.databases.createDocument(
         conf.appwriteDatabaseId,
         conf.appwriteCollectionId,
-        slug, // using slug as the document ID to avoid duplicate posts
+        slug,
         {
           title,
           content,
           featuredImage,
           status,
+          userId, // ✅ Add this line!
         }
       );
     } catch (error) {
       console.log("Appwrite Service - Create Post Error: ", error);
+      throw error; // Also throw the error so PostForm can catch it
     }
-  }
+}
 
   async deletePost(slug) {
     // function to delete a post by its slug (document ID)
@@ -138,3 +138,7 @@ export class Service {
     return this.storage.getFilePreview(conf.appwriteBucketId, fileId);
   }
 }
+
+
+const service = new Service()
+export default service
